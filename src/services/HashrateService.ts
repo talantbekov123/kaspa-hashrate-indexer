@@ -17,6 +17,7 @@ export class HashrateService {
             .catch((error) => console.log("Error initializing database:", error));
     }
 
+    // Singleton design pattern to ensure only one instance of the service is created
     public static getInstance(): HashrateService {
         if (!HashrateService.instance) {
             HashrateService.instance = new HashrateService();
