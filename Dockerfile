@@ -37,8 +37,16 @@ COPY . .
 # Build TypeScript code
 RUN npm run build
 
+# Create initialization script
+RUN echo "#!/bin/bash\n\
+service postgresql start\n\
+su - postgres -c \"psql -c \\\"CREATE DATABASE $DB_NAME;\\\"\"\n\
+su - postgres -c \"psql -c \\\"ALTER USER postgres WITH PASSWORD '$DB_PASSWORD';\\\"\"\n\
+npm run migration:run && npm run seed && npm start" > /usr/src/app/start.sh && \
+chmod +x /usr/src/app/start.sh
+
 # Expose application port
 EXPOSE $PORT
 
-# Start the app
-CMD ["npm", "start"]
+# Start the app with migrations and seeding
+CMD ["/usr/src/app/start.sh"]

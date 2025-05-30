@@ -67,6 +67,20 @@ npm run build
 npm start
 ```
 
+## Running with Docker
+
+1. Build the Docker image:
+```bash
+docker build -t kaspa-hashrate-indexer .
+```
+
+2. Run the container:
+```bash
+docker run -d --name kaspa-hashrate-container -p 3005:3000 kaspa-hashrate-indexer
+```
+
+The application will be available at `http://localhost:3000`.
+
 ## API Endpoints
 
 - `GET /`: Welcome message
