@@ -28,7 +28,6 @@ export class HashrateService {
     private async fetchHashrate(): Promise<number> {
         try {
             const response = await axios.get('https://api.kaspa.org/info/hashrate');
-            console.log(response.data);
             return response.data.hashrate;
         } catch (error) {
             console.error('Error fetching hashrate:', error);
@@ -40,6 +39,7 @@ export class HashrateService {
         try {
             const hashrateEntity = new Hashrate();
             hashrateEntity.hashrate = hashrate;
+            hashrateEntity.timestamp = Math.floor(Date.now() / 1000);
             await this.repository.save(hashrateEntity);
             console.log(`Hashrate saved: ${hashrate}`);
         } catch (error) {

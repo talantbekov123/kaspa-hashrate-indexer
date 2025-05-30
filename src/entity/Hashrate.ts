@@ -5,7 +5,7 @@ export class Hashrate {
     @PrimaryGeneratedColumn()
     id!: number;
 
-    @Column("bigint")
+    @Column("numeric")
     hashrate!: number;
 
     @Column("bigint", { nullable: true })
