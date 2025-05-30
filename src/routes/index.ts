@@ -11,35 +11,33 @@ router.get('/', (req: Request, res: Response) => {
 /* GET hashrate data */
 router.get('/hashrate', async (req: Request, res: Response) => {
   try {
-    const now = Date.now();
-    const oneDayAgo = now - (24 * 60 * 60 * 1000);
-    
-    const start = parseInt(req.query.startTimestamp as string) || oneDayAgo;
-    const end = parseInt(req.query.endTimestamp as string) || now;
-
-    if (isNaN(start) || isNaN(end) || start > end) {
-      return res.status(400).json({
-        error: 'Invalid timestamp range',
-        message: 'Please provide valid timestamps where start is before end'
-      });
-    }
-
-    const repository = AppDataSource.getRepository(Hashrate);
-    const hashrateData = await repository
-      .createQueryBuilder('hashrate')
-      .where('hashrate.timestamp >= :start', { start: new Date(start) })
-      .andWhere('hashrate.timestamp <= :end', { end: new Date(end) })
-      .orderBy('hashrate.timestamp', 'ASC')
-      .getMany();
-    const formattedData = hashrateData.map(entry => ({
-      timestamp: entry.timestamp,
-      hashrate: Number(entry.hashrate)
-    }));
+    const result = await AppDataSource.getRepository(Hashrate).query(`
+      WITH ranked AS (
+        SELECT 
+          timestamp,
+          to_timestamp(timestamp)::date AS day,
+          hashrate,
+          ROW_NUMBER() OVER (PARTITION BY to_timestamp(timestamp)::date ORDER BY hashrate) AS rn,
+          COUNT(*) OVER (PARTITION BY to_timestamp(timestamp)::date) AS cnt
+        FROM hashrate
+      ),
+      daily_stats AS (
+        SELECT 
+          day,
+          MIN(timestamp) as first_timestamp,
+          PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY hashrate) AS median_hashrate
+        FROM ranked
+        GROUP BY day
+      )
+      SELECT 
+        first_timestamp as timestamp,
+        median_hashrate
+      FROM daily_stats
+      ORDER BY first_timestamp;
+    `);
 
     res.json({
-      startTimestamp: start,
-      endTimestamp: end,
-      data: formattedData
+      data: result
     });
   } catch (error) {
     console.error('Error fetching hashrate data:', error);

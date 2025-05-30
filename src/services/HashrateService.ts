@@ -49,8 +49,8 @@ export class HashrateService {
     }
 
     private startCronJob(): void {
-        // Run every 30 seconds
-        cron.schedule('*/30 * * * * *', async () => {
+        // Run every hour
+        cron.schedule('0 * * * *', async () => {
             try {
                 const hashrate = await this.fetchHashrate();
                 await this.saveHashrate(hashrate);
