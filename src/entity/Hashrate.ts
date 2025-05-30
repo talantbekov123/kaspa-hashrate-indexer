@@ -1,13 +1,16 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 
 @Entity()
 export class Hashrate {
     @PrimaryGeneratedColumn()
     id!: number;
 
-    @Column("decimal", { precision: 20, scale: 2 })
+    @Column("bigint")
     hashrate!: number;
 
-    @CreateDateColumn()
-    timestamp!: Date;
+    @Column("bigint", { nullable: true })
+    difficulty?: number;
+
+    @Column("bigint", { unique: true })
+    timestamp!: number;
 } 

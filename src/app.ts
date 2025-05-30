@@ -3,8 +3,8 @@ import express, { Request, Response, NextFunction } from 'express';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
-import { HashrateService } from './services/HashrateService';
 import indexRouter from './routes/index';
+import { HashrateService } from './services/hashrateService';
 
 const app = express();
 

@@ -31,9 +31,8 @@ router.get('/hashrate', async (req: Request, res: Response) => {
       .andWhere('hashrate.timestamp <= :end', { end: new Date(end) })
       .orderBy('hashrate.timestamp', 'ASC')
       .getMany();
-
     const formattedData = hashrateData.map(entry => ({
-      timestamp: entry.timestamp.getTime(),
+      timestamp: entry.timestamp,
       hashrate: Number(entry.hashrate)
     }));
 
