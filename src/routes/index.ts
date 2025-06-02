@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import { AppDataSource } from '../data-source';
 import { Hashrate } from '../entity/Hashrate';
+import { HASHRATE_MULTIPLIER } from '../constants';
 const router = express.Router();
 
 /* GET home page. */
@@ -36,8 +37,14 @@ router.get('/hashrate', async (req: Request, res: Response) => {
       ORDER BY first_timestamp;
     `);
 
+    for (const element of result) {
+      if (element.median_hashrate < 100000000) {
+        element.median_hashrate = element.median_hashrate * HASHRATE_MULTIPLIER;
+      }
+    }
+
     res.json({
-      data: result
+      data: result,
     });
   } catch (error) {
     console.error('Error fetching hashrate data:', error);
@@ -45,4 +52,4 @@ router.get('/hashrate', async (req: Request, res: Response) => {
   }
 });
 
-export default router; 
+export default router;
