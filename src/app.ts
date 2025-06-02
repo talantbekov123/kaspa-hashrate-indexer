@@ -31,11 +31,11 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   // set locals, only providing error in development
   const error = {
     message: err.message,
-    error: req.app.get('env') === 'development' ? err : {}
+    error: req.app.get('env') === 'development' ? err : {},
   };
 
   // send error response
   res.status(err.status || 500).json(error);
 });
 
-export default app; 
+export default app;
